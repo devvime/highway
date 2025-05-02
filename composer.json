@@ -3,7 +3,7 @@
     "description": "PHP Router",
     "autoload": {
         "psr-4": {
-            "Devvime\\Route\\": "src/"
+            "highway\\": "src/"
         }
     },
     "authors": [

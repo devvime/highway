@@ -1,16 +1,13 @@
 <?php
 
-namespace Devvime\Route\middlewares;
+namespace highway\middlewares;
 
-class TestMiddleware
+use highway\core\MiddlewareInterface;
+
+class TestMiddleware implements MiddlewareInterface
 {
-  public static function index()
-  {
-    echo "Middleware OK";
-  }
-
-  public static function handle()
-  {
-    echo "Middleware handle OK";
+  public function handle($request) {
+    echo "Middleware ok";
+    echo "<br>";
   }
 }

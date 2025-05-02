@@ -1,118 +1,111 @@
 <?php
 
-namespace Devvime\Route\core;
+namespace highway\core;
+
+interface MiddlewareInterface
+{
+  public function handle($request);
+}
 
 class Router
 {
+  private $routes = [];
+  private $groupPrefix = '';
+  private $groupMiddleware = [];
 
-  private static $routes = [];
-  private static $path;
-  private static $method;
-  private static $groupPrefix = '';
-  private static $groupMiddleware = null;
-
-  public static function get($path, $controller, $function, $middleware = null)
+  public function get($path, $controller, $function, $middleware = [])
   {
-    self::set_route('GET', $path, $controller, $function, $middleware);
+    $this->setRoute('GET', $path, $controller, $function, $middleware);
   }
 
-  public static function post($path, $controller, $function, $middleware = null)
+  public function post($path, $controller, $function, $middleware = [])
   {
-    self::set_route('POST', $path, $controller, $function, $middleware);
+    $this->setRoute('POST', $path, $controller, $function, $middleware);
   }
 
-  public static function put($path, $controller, $function, $middleware = null)
+  public function put($path, $controller, $function, $middleware = [])
   {
-    self::set_route('PUT', $path, $controller, $function, $middleware);
+    $this->setRoute('PUT', $path, $controller, $function, $middleware);
   }
 
-  public static function delete($path, $controller, $function, $middleware = null)
+  public function delete($path, $controller, $function, $middleware = [])
   {
-    self::set_route('DELETE', $path, $controller, $function, $middleware);
+    $this->setRoute('DELETE', $path, $controller, $function, $middleware);
   }
 
-  public static function patch($path, $controller, $function, $middleware = null)
+  public function patch($path, $controller, $function, $middleware = [])
   {
-    self::set_route('PATCH', $path, $controller, $function, $middleware);
+    $this->setRoute('PATCH', $path, $controller, $function, $middleware);
   }
 
-  public static function options($path, $controller, $function, $middleware = null)
+  public function options($path, $controller, $function, $middleware = [])
   {
-    self::set_route('OPTIONS', $path, $controller, $function, $middleware);
+    $this->setRoute('OPTIONS', $path, $controller, $function, $middleware);
   }
 
-  public static function group($prefix, $callback, $middleware = null)
+  public function group($prefix, $callback, $middleware = [])
   {
-    $previousPrefix = self::$groupPrefix;
-    $previousMiddleware = self::$groupMiddleware;
+    $previousPrefix = $this->groupPrefix;
+    $previousMiddleware = $this->groupMiddleware;
 
-    self::$groupPrefix .= $prefix;
-    if ($middleware !== null) {
-      self::$groupMiddleware = $middleware;
-    }
+    $this->groupPrefix .= $prefix;
+    $this->groupMiddleware = array_merge($this->groupMiddleware, $middleware);
 
-    $callback();
+    $callback($this);
 
-    self::$groupPrefix = $previousPrefix;
-    self::$groupMiddleware = $previousMiddleware;
+    $this->groupPrefix = $previousPrefix;
+    $this->groupMiddleware = $previousMiddleware;
   }
 
-  private static function set_route($method, $path, $controller, $function, $middleware)
+  private function setRoute($method, $path, $controller, $function, $middleware)
   {
-    $fullPath = self::$groupPrefix . $path;
-    $finalMiddleware = $middleware ?? self::$groupMiddleware;
+    $fullPath = rtrim($this->groupPrefix . $path, '/');
+    $finalMiddleware = array_merge($this->groupMiddleware, $middleware);
 
-    self::$routes[$fullPath] = [
-      "method" => $method,
-      "controller" => $controller,
-      "function" => $function,
-      "middleware" => $finalMiddleware
+    $this->routes[$fullPath][$method] = [
+      'controller' => $controller,
+      'function' => $function,
+      'middleware' => $finalMiddleware
     ];
   }
 
-  public static function init()
+  public function init($path = null, $method = null)
   {
-    self::$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    self::$method = $_SERVER['REQUEST_METHOD'];
+    $path = $path ?? rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+    $method = $method ?? $_SERVER['REQUEST_METHOD'];
 
-    $matchedRoute = null;
-    $params = null;
-
-    foreach (self::$routes as $routePattern => $route) {
-      $matchedParams = self::matchPath($routePattern);
-      if ($matchedParams !== null) {
-        $matchedRoute = $route;
-        $params = $matchedParams;
-        break;
+    foreach ($this->routes as $routePattern => $methods) {
+      $params = $this->matchPath($routePattern, $path);
+      if ($params !== null && isset($methods[$method])) {
+        $this->executeRoute($methods[$method], $params);
+        return;
       }
     }
 
-    if ($matchedRoute) {
-      $request = self::get_request($params);
-      self::execute_route($matchedRoute, $request);
-    } else {
-      http_response_code(404);
-      echo json_encode(["error" => "Route not found"]);
-    }
+    http_response_code(404);
+    echo json_encode(['error' => 'Route not found']);
   }
 
-  private static function execute_route($current_route, $request)
+  private function executeRoute($route, $params)
   {
-    if (self::$method === $current_route['method']) {
-      $middleware = $current_route['middleware'];
-      if ($middleware !== null) {
-        $middlewareClass = new $middleware[0];
-        $middlewareFunction = $middleware[1];
-        $middlewareClass->$middlewareFunction($request);
-      }
+    $request = $this->getRequest($params);
 
-      $controller = new $current_route['controller'];
-      $function = $current_route['function'];
-      $controller->$function($request);
+    foreach ($route['middleware'] as $middleware) {
+      if ($middleware instanceof MiddlewareInterface) {
+        $middleware->handle($request);
+      } elseif (is_array($middleware)) {
+        $instance = new $middleware[0]();
+        $method = $middleware[1];
+        $instance->$method($request);
+      }
     }
+
+    $controller = new $route['controller']();
+    $function = $route['function'];
+    $controller->$function($request);
   }
 
-  private static function get_request($params)
+  private function getRequest($params)
   {
     $request = new \stdClass;
     $request->body = json_decode(file_get_contents('php://input'));
@@ -121,27 +114,21 @@ class Router
     return $request;
   }
 
-  private static function matchPath($pattern)
+  private function matchPath($pattern, $path)
   {
     $patternParts = explode('/', trim($pattern, '/'));
-    $pathParts = explode('/', trim(self::$path, '/'));
-
-    // Fail if there are too few path parts for non-optional params
-    $minParts = count(array_filter($patternParts, function ($part) {
-      return !(strpos($part, ':') === 0 && substr($part, -1) === '?');
-    }));
-    if (count($pathParts) < $minParts || count($pathParts) > count($patternParts)) {
-      return null;
-    }
+    $pathParts = explode('/', trim($path, '/'));
 
     $params = [];
 
-    foreach ($patternParts as $index => $part) {
-      if (!isset($pathParts[$index])) {
-        // If it's an optional param, skip; else fail
+    if (count($pathParts) < count(array_filter($patternParts, fn($part) => !(strpos($part, ':') === 0 && substr($part, -1) === '?'))) || count($pathParts) > count($patternParts)) {
+      return null;
+    }
+
+    foreach ($patternParts as $i => $part) {
+      if (!isset($pathParts[$i])) {
         if (strpos($part, ':') === 0 && substr($part, -1) === '?') {
-          $paramName = substr($part, 1, -1);
-          $params[$paramName] = null;
+          $params[substr($part, 1, -1)] = null;
           continue;
         } else {
           return null;
@@ -149,10 +136,9 @@ class Router
       }
 
       if (strpos($part, ':') === 0) {
-        $isOptional = substr($part, -1) === '?';
-        $paramName = $isOptional ? substr($part, 1, -1) : substr($part, 1);
-        $params[$paramName] = $pathParts[$index];
-      } elseif ($part !== $pathParts[$index]) {
+        $paramName = rtrim(substr($part, 1), '?');
+        $params[$paramName] = $pathParts[$i];
+      } elseif ($part !== $pathParts[$i]) {
         return null;
       }
     }

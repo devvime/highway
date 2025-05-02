@@ -2,15 +2,15 @@
 @baseURL = http://localhost:8080
 @token = 'fdjx6411hdr1h11drh1dr1hdr
 
-GET {{baseURL}}/api/v1/users
+GET {{baseURL}}/user
 Authorization: Bearer {{token}}
 
 ### Read user by id
-GET {{baseURL}}/test/4002/892
+GET {{baseURL}}/user/1
 Authorization: Bearer {{token}}
 
 ### Create new user
-POST {{baseURL}}/test/4002/892
+POST {{baseURL}}/user
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -19,3 +19,19 @@ Authorization: Bearer {{token}}
   "email": "steve3@test.com",
   "password": "1aA3@56"
 }
+
+### Update new user
+PUT {{baseURL}}/user/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Steve3",
+  "email": "steve3@test.com",
+  "password": "1aA3@56"
+}
+
+### Delete new user
+DELETE {{baseURL}}/user/1
+Content-Type: application/json
+Authorization: Bearer {{token}}

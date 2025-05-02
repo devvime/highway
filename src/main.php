@@ -1,7 +1,6 @@
 <?php
 
-use Devvime\Route\core\router;
-
+require_once(__DIR__ . '/config.php');
 require_once(__DIR__ . '/routes/server.php');
 
-Router::init();
+router->init();

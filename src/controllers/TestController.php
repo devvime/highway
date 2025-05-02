@@ -1,31 +1,35 @@
 <?php
 
-namespace Devvime\Route\controllers;
+namespace highway\controllers;
 
 class TestController
 {
   public function index()
   {
-    echo "OK";
+    echo "GET OK";
   }
 
   public function show($request)
   {
-    var_dump($request);
+    echo "SHOW OK";
+    echo json_encode($request);
   }
 
-  public function profile($request)
+  public function store($request)
   {
-    var_dump($request);
+    echo "POST OK";
+    echo json_encode($request);
   }
 
-  public function users()
+  public function update($request)
   {
-    echo "list users OK";
+    echo "PUT OK";
+    echo json_encode($request);
   }
 
-  public function users2()
+  public function delete($request)
   {
-    echo "list users 2 OK";
+    echo "DELETE OK";
+    echo json_encode($request);
   }
 }
