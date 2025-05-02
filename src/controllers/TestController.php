@@ -8,7 +8,7 @@ class TestController
         echo "OK";
     }
 
-    public static function show($id) {
-        echo "OK - {$id}";
+    public static function show($request) {
+        var_dump($request);
     }
 }
