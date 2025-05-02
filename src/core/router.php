@@ -7,6 +7,8 @@ class Router {
     private static $routes = [];
     private static $path;
     private static $method;
+    private static $groupPrefix = '';
+    private static $groupMiddleware = null;
 
     public static function get($path, $controller, $function, $middleware = null) {
         self::set_route('GET', $path, $controller, $function, $middleware);
@@ -32,12 +34,30 @@ class Router {
         self::set_route('OPTIONS', $path, $controller, $function, $middleware);
     }
 
+    public static function group($prefix, $callback, $middleware = null) {
+        $previousPrefix = self::$groupPrefix;
+        $previousMiddleware = self::$groupMiddleware;
+    
+        self::$groupPrefix .= $prefix;
+        if ($middleware !== null) {
+            self::$groupMiddleware = $middleware;
+        }
+    
+        $callback();
+    
+        self::$groupPrefix = $previousPrefix;
+        self::$groupMiddleware = $previousMiddleware;
+    }
+
     private static function set_route($method, $path, $controller, $function, $middleware) {
-        self::$routes[$path] = [
+        $fullPath = self::$groupPrefix . $path;
+        $finalMiddleware = $middleware ?? self::$groupMiddleware;
+    
+        self::$routes[$fullPath] = [
             "method" => $method,
             "controller" => $controller,
             "function" => $function,
-            "middleware" => $middleware
+            "middleware" => $finalMiddleware
         ];
     }
 
