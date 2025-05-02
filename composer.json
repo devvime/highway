@@ -1,0 +1,16 @@
+{
+    "name": "devvime/route",
+    "description": "PHP Router",
+    "autoload": {
+        "psr-4": {
+            "Devvime\\Route\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "devvime",
+            "email": "dihapp@outlook.com"
+        }
+    ],
+    "require": {}
+}
