@@ -1,0 +1,21 @@
+### List all users
+@baseURL = http://localhost:8080
+@token = 'fdjx6411hdr1h11drh1dr1hdr
+
+GET {{baseURL}}/api/v1/users
+Authorization: Bearer {{token}}
+
+### Read user by id
+GET {{baseURL}}/test/4002/892
+Authorization: Bearer {{token}}
+
+### Create new user
+POST {{baseURL}}/test/4002/892
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Steve3",
+  "email": "steve3@test.com",
+  "password": "1aA3@56"
+}

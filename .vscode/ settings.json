@@ -1,0 +1,18 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "baseURL": "http://localhost:8080",
+      "token": "seu_token_aqui"
+    },
+    "dev": {
+      "token": "seu_token_aqui"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+### Login (captura o token)
+@baseURL = http://localhost:8080
+@token = 'fdjx6411hdr1h11drh1dr1hdr
+
+POST {{baseURL}}/api/login
+Content-Type: application/json
+
+{
+  "email": "admin@teste.com",
+  "senha": "123456"
+}
+
+> {%  
+    const resp = JSON.parse(response.body);
+    client.global.set("token", resp.token);
+%}
