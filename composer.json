@@ -1,16 +1,33 @@
 {
-    "name": "devvime/route",
-    "description": "PHP Router",
-    "autoload": {
-        "psr-4": {
-            "highway\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "devvime",
-            "email": "dihapp@outlook.com"
-        }
-    ],
-    "require": {}
+  "name": "devvime/highway",
+  "description": "PHP Router",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "devvime",
+      "email": "dihapp@outlook.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "highway\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": "php vendor/bin/pest"
+  },
+  "require": {
+    "PHP": ">=8.1.0",
+    "firebase/php-jwt": "^5.2",
+    "phpmailer/phpmailer": "^6.1",
+    "vlucas/phpdotenv": "^5.4"
+  },
+  "require-dev": {
+    "pestphp/pest": "^2.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  }
 }

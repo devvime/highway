@@ -1,6 +1,7 @@
-### List all users
 @baseURL = http://localhost:8080
 @token = 'fdjx6411hdr1h11drh1dr1hdr
+
+### List all users
 
 GET {{baseURL}}/user
 Authorization: Bearer {{token}}
