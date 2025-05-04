@@ -3,6 +3,8 @@
 namespace Highway\Core;
 
 use Highway\Core\Interfaces\MiddlewareInterface;
+use Highway\Core\Request;
+use Highway\Core\Response;
 
 class Router
 {
@@ -66,49 +68,24 @@ class Router
         ];
     }
 
-    public function init($path = null, $method = null)
-    {
-        $path = $path ?? rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-        $method = $method ?? $_SERVER['REQUEST_METHOD'];
-
-        foreach ($this->routes as $routePattern => $methods) {
-            $params = $this->matchPath($routePattern, $path);
-            if ($params !== null && isset($methods[$method])) {
-                $this->executeRoute($methods[$method], $params);
-                return;
-            }
-        }
-
-        http_response_code(404);
-        echo json_encode(['error' => 'Route not found']);
-    }
-
     private function executeRoute($route, $params)
     {
-        $request = $this->getRequest($params);
+        $request = new Request($params);
+        $response = new Response();
 
         foreach ($route['middleware'] as $middleware) {
             if ($middleware instanceof MiddlewareInterface) {
-                $middleware->handle($request);
+                $middleware->handle($request, $response);
             } elseif (is_array($middleware)) {
                 $instance = new $middleware[0]();
                 $method = $middleware[1];
-                $instance->$method($request);
+                $instance->$method($request, $response);
             }
         }
 
         $controller = new $route['controller']();
         $function = $route['function'];
-        $controller->$function($request);
-    }
-
-    private function getRequest($params)
-    {
-        $request = new \stdClass;
-        $request->body = json_decode(file_get_contents('php://input'));
-        $request->query = $_GET;
-        $request->params = $params;
-        return $request;
+        $controller->$function($request, $response);
     }
 
     private function matchPath($pattern, $path)
@@ -141,5 +118,22 @@ class Router
         }
 
         return $params;
+    }
+
+    public function init($path = null, $method = null)
+    {
+        $path = $path ?? rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+        $method = $method ?? $_SERVER['REQUEST_METHOD'];
+
+        foreach ($this->routes as $routePattern => $methods) {
+            $params = $this->matchPath($routePattern, $path);
+            if ($params !== null && isset($methods[$method])) {
+                $this->executeRoute($methods[$method], $params);
+                return;
+            }
+        }
+
+        http_response_code(404);
+        echo json_encode(['error' => 'Route not found']);
     }
 }

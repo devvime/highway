@@ -2,34 +2,63 @@
 
 namespace Highway\Modules\Test;
 
+use Highway\Core\Interfaces\RequestInterface;
+use Highway\Core\Interfaces\ResponseInterface;
+
 class TestController
 {
-    public function index()
-    {
-        echo "GET OK";
+    public function index(
+        RequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $response->json(['message'=>'GET ok']);
     }
 
-    public function show($request)
-    {
-        echo "SHOW OK";
-        echo json_encode($request);
+    public function show(
+        RequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $response->json([
+            'message'=>'GET SHOW ok',
+            'body'=>$request->getBody(),
+            'query'=>$request->getQuery(),
+            'params'=>$request->getParams(),
+        ]);
     }
 
-    public function store($request)
-    {
-        echo "POST OK";
-        echo json_encode($request);
+    public function store(
+        RequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $response->json([
+            'message'=>'POST ok',
+            'body'=>$request->getBody(),
+            'query'=>$request->getQuery(),
+            'params'=>$request->getParams(),
+        ]);
     }
 
-    public function update($request)
-    {
-        echo "PUT OK";
-        echo json_encode($request);
+    public function update(
+        RequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $response->json([
+            'message'=>'PUT ok',
+            'body'=>$request->getBody(),
+            'query'=>$request->getQuery(),
+            'params'=>$request->getParams(),
+        ]);
     }
 
-    public function delete($request)
-    {
-        echo "DELETE OK";
-        echo json_encode($request);
+    public function delete(
+        RequestInterface $request,
+        ResponseInterface $response
+    ) {
+        $response->json([
+            'message'=>'DELETE ok',
+            'body'=>$request->getBody(),
+            'query'=>$request->getQuery(),
+            'params'=>$request->getParams(),
+        ]);
     }
 }
