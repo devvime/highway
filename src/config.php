@@ -1,5 +1,5 @@
 <?php
 
-use highway\core\router;
+use Highway\Core\Router;
 
 const router = new Router();
