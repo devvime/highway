@@ -10,7 +10,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Highway\\": "src/"
+      "Highway\\": "backend/"
     }
   },
   "scripts": {
