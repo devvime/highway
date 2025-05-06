@@ -10,7 +10,7 @@ class Request implements RequestInterface
     public $body;
     public $query;
 
-    public function __construct($params)
+    public function __construct(array $params)
     {
         $this->params = $params;
         $this->body = json_decode(file_get_contents('php://input'));

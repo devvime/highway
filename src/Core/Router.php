@@ -2,49 +2,77 @@
 
 namespace Highway\Core;
 
-use Highway\Core\Interfaces\ControllerInterface;
 use Highway\Core\Interfaces\MiddlewareInterface;
 use Highway\Core\Request;
 use Highway\Core\Response;
 
 class Router
 {
-    private $routes = [];
-    private $groupPrefix = '';
-    private $groupMiddleware = [];
+    private array $routes = [];
+    private string $groupPrefix = '';
+    private array $groupMiddleware = [];
 
-    public function get($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function get(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('GET', $path, $controller, $function, $middleware);
     }
 
-    public function post($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function post(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('POST', $path, $controller, $function, $middleware);
     }
 
-    public function put($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function put(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('PUT', $path, $controller, $function, $middleware);
     }
 
-    public function delete($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function delete(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('DELETE', $path, $controller, $function, $middleware);
     }
 
-    public function patch($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function patch(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('PATCH', $path, $controller, $function, $middleware);
     }
 
-    public function options($path, $controller, $function = 'handle', $middleware = [])
-    {
+    public function options(
+        string $path,
+        string | object $controller,
+        string $function = 'handle',
+        array $middleware = []
+    ) {
         $this->setRoute('OPTIONS', $path, $controller, $function, $middleware);
     }
 
-    private function setRoute($method, $path, $controller, $function, $middleware)
-    {
+    private function setRoute(
+        string $method,
+        string $path,
+        string | object $controller,
+        string $function,
+        array $middleware
+    ) {
         $fullPath = rtrim($this->groupPrefix . $path, '/');
         $finalMiddleware = array_merge($this->groupMiddleware, $middleware);
 
@@ -55,8 +83,11 @@ class Router
         ];
     }
 
-    public function group($prefix, $callback, $middleware = [])
-    {
+    public function group(
+        string $prefix,
+        object $callback,
+        array $middleware = []
+    ) {
         $previousPrefix = $this->groupPrefix;
         $previousMiddleware = $this->groupMiddleware;
 
@@ -69,8 +100,10 @@ class Router
         $this->groupMiddleware = $previousMiddleware;
     }
 
-    private function executeRoute($route, $params)
-    {
+    private function executeRoute(
+        array $route,
+        array $params
+    ) {
         $request = new Request($params);
         $response = new Response();
 
@@ -125,8 +158,10 @@ class Router
     //     return $params;
     // }
 
-    private function matchPath($pattern, $path)
-    {
+    private function matchPath(
+        string $pattern,
+        string $path
+    ) {
         $patternParts = explode('/', trim($pattern, '/'));
         $pathParts = explode('/', trim($path, '/'));
 
@@ -172,8 +207,10 @@ class Router
         return $params;
     }
 
-    private function validateType($value, $type)
-    {
+    private function validateType(
+        string $value,
+        string $type
+    ) {
         switch ($type) {
             case 'number':
                 return is_numeric($value);
@@ -185,12 +222,16 @@ class Router
         }
     }
 
-    private function convertType($value, $type)
-    {
+    private function convertType(
+        string $value,
+        string $type
+    ) {
         switch ($type) {
             case 'number':
+            case 'int':
                 return $value + 0;
             case 'boolean':
+            case 'bool':
                 return $value === 'true' || $value === '1';
             case 'string':
             default:
@@ -198,8 +239,10 @@ class Router
         }
     }
 
-    public function init($path = null, $method = null)
-    {
+    public function init(
+        string | null $path = null,
+        string | null $method = null
+    ) {
         $path = $path ?? rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $method = $method ?? $_SERVER['REQUEST_METHOD'];
 

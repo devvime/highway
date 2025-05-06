@@ -21,9 +21,9 @@ class UserController implements ControllerInterface
     ) {
         $response->json([
             'message'=>'GET SHOW ok',
-            'body'=>$request->getBody(),
-            'query'=>$request->getQuery(),
-            'params'=>$request->getParams(),
+            'body'=>$request->body,
+            'query'=>$request->query,
+            'params'=>$request->params
         ]);
     }
 
@@ -33,9 +33,9 @@ class UserController implements ControllerInterface
     ) {
         $response->json([
             'message'=>'POST ok',
-            'body'=>$request->getBody(),
-            'query'=>$request->getQuery(),
-            'params'=>$request->getParams(),
+            'body'=>$request->body,
+            'query'=>$request->query,
+            'params'=>$request->params,
         ]);
     }
 
@@ -45,8 +45,8 @@ class UserController implements ControllerInterface
     ) {
         $response->json([
             'message'=>'PUT ok',
-            'body'=>$request->getBody(),
-            'query'=>$request->getQuery(),
+            'body'=>$request->body,
+            'query'=>$request->query,
             'params'=>$request->getParams(),
         ]);
     }
@@ -57,8 +57,8 @@ class UserController implements ControllerInterface
     ) {
         $response->json([
             'message'=>'DELETE ok',
-            'body'=>$request->getBody(),
-            'query'=>$request->getQuery(),
+            'body'=>$request->body,
+            'query'=>$request->query,
             'params'=>$request->getParams(),
         ]);
     }
