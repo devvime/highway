@@ -2,6 +2,7 @@
 
 namespace Highway\Core;
 
+use Highway\Core\Interfaces\ControllerInterface;
 use Highway\Core\Interfaces\MiddlewareInterface;
 use Highway\Core\Request;
 use Highway\Core\Response;
@@ -12,32 +13,32 @@ class Router
     private $groupPrefix = '';
     private $groupMiddleware = [];
 
-    public function get($path, $controller, $function, $middleware = [])
+    public function get($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('GET', $path, $controller, $function, $middleware);
     }
 
-    public function post($path, $controller, $function, $middleware = [])
+    public function post($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('POST', $path, $controller, $function, $middleware);
     }
 
-    public function put($path, $controller, $function, $middleware = [])
+    public function put($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('PUT', $path, $controller, $function, $middleware);
     }
 
-    public function delete($path, $controller, $function, $middleware = [])
+    public function delete($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('DELETE', $path, $controller, $function, $middleware);
     }
 
-    public function patch($path, $controller, $function, $middleware = [])
+    public function patch($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('PATCH', $path, $controller, $function, $middleware);
     }
 
-    public function options($path, $controller, $function, $middleware = [])
+    public function options($path, $controller, $function = 'handle', $middleware = [])
     {
         $this->setRoute('OPTIONS', $path, $controller, $function, $middleware);
     }
@@ -83,10 +84,46 @@ class Router
             }
         }
 
-        $controller = new $route['controller']();
-        $function = $route['function'];
-        $controller->$function($request, $response);
+        if (is_string($route['controller'])) {
+            $controller = new $route['controller']();
+            $function = $route['function'];
+            $controller->$function($request, $response);
+        } else {
+            $route['controller']($request, $response);
+        }
     }
+
+    // private function matchPath($pattern, $path)
+    // {
+    //     $patternParts = explode('/', trim($pattern, '/'));
+    //     $pathParts = explode('/', trim($path, '/'));
+
+    //     $params = [];
+
+    //     if (count($pathParts) < count(array_filter($patternParts, fn($part) => !(strpos($part, ':') === 0 && substr($part, -1) === '?'))) || count($pathParts) > count($patternParts)) {
+    //         return null;
+    //     }
+
+    //     foreach ($patternParts as $i => $part) {
+    //         if (!isset($pathParts[$i])) {
+    //             if (strpos($part, ':') === 0 && substr($part, -1) === '?') {
+    //                 $params[substr($part, 1, -1)] = null;
+    //                 continue;
+    //             } else {
+    //                 return null;
+    //             }
+    //         }
+
+    //         if (strpos($part, ':') === 0) {
+    //             $paramName = rtrim(substr($part, 1), '?');
+    //             $params[$paramName] = $pathParts[$i];
+    //         } elseif ($part !== $pathParts[$i]) {
+    //             return null;
+    //         }
+    //     }
+
+    //     return $params;
+    // }
 
     private function matchPath($pattern, $path)
     {
@@ -102,7 +139,8 @@ class Router
         foreach ($patternParts as $i => $part) {
             if (!isset($pathParts[$i])) {
                 if (strpos($part, ':') === 0 && substr($part, -1) === '?') {
-                    $params[substr($part, 1, -1)] = null;
+                    $paramName = substr($part, 1, -1);
+                    $params[$paramName] = null;
                     continue;
                 } else {
                     return null;
@@ -110,14 +148,54 @@ class Router
             }
 
             if (strpos($part, ':') === 0) {
-                $paramName = rtrim(substr($part, 1), '?');
-                $params[$paramName] = $pathParts[$i];
+                $paramPattern = rtrim(substr($part, 1), '?');
+                if (preg_match('/(\w+)\[(\w+)\]/', $paramPattern, $matches)) {
+                    $paramName = $matches[1];
+                    $paramType = $matches[2];
+                } else {
+                    $paramName = $paramPattern;
+                    $paramType = 'string';
+                }
+
+                $value = $pathParts[$i];
+
+                if (!$this->validateType($value, $paramType)) {
+                    return null;
+                }
+
+                $params[$paramName] = $this->convertType($value, $paramType);
             } elseif ($part !== $pathParts[$i]) {
                 return null;
             }
         }
 
         return $params;
+    }
+
+    private function validateType($value, $type)
+    {
+        switch ($type) {
+            case 'number':
+                return is_numeric($value);
+            case 'boolean':
+                return $value === 'true' || $value === 'false' || $value === '1' || $value === '0';
+            case 'string':
+            default:
+                return is_string($value);
+        }
+    }
+
+    private function convertType($value, $type)
+    {
+        switch ($type) {
+            case 'number':
+                return $value + 0;
+            case 'boolean':
+                return $value === 'true' || $value === '1';
+            case 'string':
+            default:
+                return $value;
+        }
     }
 
     public function init($path = null, $method = null)

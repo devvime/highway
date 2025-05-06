@@ -15,12 +15,9 @@ beforeEach(function () {
 it('handles a simple GET route', function () {
     $router = new Router();
 
-    $router->get('/test', new class {
-        public function handle($req)
-        {
-            $GLOBALS['called'] = true;
-        }
-    }, 'handle');
+    $router->get('/test', function() {
+        $GLOBALS['called'] = true;
+    });
 
     $_SERVER['REQUEST_URI'] = '/test';
     $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -42,9 +39,9 @@ it('executes middleware', function () {
         }
     };
 
-    $router->get('/with-middleware', new class {
-        public function handle($req) {}
-    }, 'handle', [$middleware]);
+    $router->get('/with-middleware', function() {
+        //
+    }, null, [$middleware]);
 
     $_SERVER['REQUEST_URI'] = '/with-middleware';
     $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -72,12 +69,9 @@ it('returns route not found', function () {
 it('handles optional param', function () {
     $router = new Router();
 
-    $router->get('/optional/:id?', new class {
-        public function handle($req)
-        {
-            $GLOBALS['receivedParam'] = $req->getParams()['id'];
-        }
-    }, 'handle');
+    $router->get('/optional/:id?', function($req) {
+        $GLOBALS['receivedParam'] = $req->params['id'];
+    });
 
     $_SERVER['REQUEST_URI'] = '/optional';
     $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -89,16 +83,30 @@ it('handles optional param', function () {
     expect($GLOBALS['receivedParam'])->toBeNull();
 });
 
+it('handles param', function () {
+    $router = new Router();
+
+    $router->get('/optional/:id?', function($req) {
+        $GLOBALS['receivedParam'] = $req->params['id'];
+    });
+
+    $_SERVER['REQUEST_URI'] = '/optional/2';
+    $_SERVER['REQUEST_METHOD'] = 'GET';
+
+    ob_start();
+    $router->init();
+    ob_end_clean();
+
+    expect($GLOBALS['receivedParam'])->toBe('2');
+});
+
 it('handles grouped routes', function () {
     $router = new Router();
 
     $router->group('/api', function () use ($router) {
-        $router->get('/test', new class {
-            public function handle($req)
-            {
-                $GLOBALS['calledInsideGroup'] = true;
-            }
-        }, 'handle');
+        $router->get('/test', function() {
+            $GLOBALS['calledInsideGroup'] = true;
+        });
     });
 
     $_SERVER['REQUEST_URI'] = '/api/test';

@@ -3,17 +3,15 @@
 use Highway\Modules\Test\TestController;
 use Highway\Middlewares\TestMiddleware;
 
-router->get('/', new class {
-    public function handle() {
-        view->assign('title','Hello!');
-        view->draw('test');
-    }
-}, 'handle');
+router->get('/', function ($req, $res) {
+    view->assign('title','Hello!');
+    view->draw('test');
+});
 
 router->group('/user', function () {
     router->get('/', TestController::class, 'index');
-    router->get('/:id', TestController::class, 'show');
+    router->get('/:id[number]', TestController::class, 'show');
     router->post('/', TestController::class, 'store');
-    router->put('/:id', TestController::class, 'update');
-    router->delete('/:id', TestController::class, 'delete');
+    router->put('/:id[number]', TestController::class, 'update');
+    router->delete('/:id[number]', TestController::class, 'destroy');
 }, [new TestMiddleware()]);

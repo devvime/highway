@@ -2,10 +2,11 @@
 
 namespace Highway\Modules\Test;
 
+use Highway\Core\Interfaces\ControllerInterface;
 use Highway\Core\Interfaces\RequestInterface;
 use Highway\Core\Interfaces\ResponseInterface;
 
-class TestController
+class TestController implements ControllerInterface
 {
     public function index(
         RequestInterface $request,
@@ -22,7 +23,7 @@ class TestController
             'message'=>'GET SHOW ok',
             'body'=>$request->getBody(),
             'query'=>$request->getQuery(),
-            'params'=>$request->getParams(),
+            'params'=>$request->params
         ]);
     }
 
@@ -50,7 +51,7 @@ class TestController
         ]);
     }
 
-    public function delete(
+    public function destroy(
         RequestInterface $request,
         ResponseInterface $response
     ) {

@@ -2,10 +2,11 @@
 
 namespace Highway\Modules\Test;
 
+use Highway\Core\Interfaces\ControllerInterface;
 use Highway\Core\Interfaces\RequestInterface;
 use Highway\Core\Interfaces\ResponseInterface;
 
-class UserController
+class UserController implements ControllerInterface
 {
     public function index(
         RequestInterface $request,
@@ -50,7 +51,7 @@ class UserController
         ]);
     }
 
-    public function delete(
+    public function destroy(
         RequestInterface $request,
         ResponseInterface $response
     ) {

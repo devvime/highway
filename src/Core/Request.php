@@ -6,16 +6,20 @@ use Highway\Core\Interfaces\RequestInterface;
 
 class Request implements RequestInterface
 {
-    private $params;
+    public $params;
+    public $body;
+    public $query;
 
     public function __construct($params)
     {
         $this->params = $params;
+        $this->body = json_decode(file_get_contents('php://input'));
+        $this->query = $_GET;
     }
 
     public function getBody()
     {
-        return json_decode(file_get_contents('php://input'));
+        return $this->body;
     }
 
     public function getQuery()
