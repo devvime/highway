@@ -13,5 +13,5 @@ interface ResponseInterface
         array $data = []
     );
 
-    public function responseCode(int $code);
+    public function code(int $code);
 }

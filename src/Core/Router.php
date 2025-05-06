@@ -42,6 +42,18 @@ class Router
         $this->setRoute('OPTIONS', $path, $controller, $function, $middleware);
     }
 
+    private function setRoute($method, $path, $controller, $function, $middleware)
+    {
+        $fullPath = rtrim($this->groupPrefix . $path, '/');
+        $finalMiddleware = array_merge($this->groupMiddleware, $middleware);
+
+        $this->routes[$fullPath][$method] = [
+            'controller' => $controller,
+            'function' => $function,
+            'middleware' => $finalMiddleware
+        ];
+    }
+
     public function group($prefix, $callback, $middleware = [])
     {
         $previousPrefix = $this->groupPrefix;
@@ -54,18 +66,6 @@ class Router
 
         $this->groupPrefix = $previousPrefix;
         $this->groupMiddleware = $previousMiddleware;
-    }
-
-    private function setRoute($method, $path, $controller, $function, $middleware)
-    {
-        $fullPath = rtrim($this->groupPrefix . $path, '/');
-        $finalMiddleware = array_merge($this->groupMiddleware, $middleware);
-
-        $this->routes[$fullPath][$method] = [
-            'controller' => $controller,
-            'function' => $function,
-            'middleware' => $finalMiddleware
-        ];
     }
 
     private function executeRoute($route, $params)

@@ -20,7 +20,7 @@ class Response implements ResponseInterface
         // TO DO: render html file
     }
 
-    public function responseCode(int $code)
+    public function code(int $code)
     {
         http_response_code($code);
     }
