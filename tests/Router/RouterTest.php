@@ -1,7 +1,7 @@
 <?php
 
-use highway\core\router;
-use highway\core\MiddlewareInterface;
+use Highway\Core\Router;
+use Highway\Core\Interfaces\MiddlewareInterface;
 
 beforeEach(function () {
     $_SERVER['REQUEST_URI'] = '';
@@ -12,11 +12,12 @@ beforeEach(function () {
     $GLOBALS['calledInsideGroup'] = false;
 });
 
-test('handles a simple GET route', function () {
+it('handles a simple GET route', function () {
     $router = new Router();
 
     $router->get('/test', new class {
-        public function handle($req) {
+        public function handle($req)
+        {
             $GLOBALS['called'] = true;
         }
     }, 'handle');
@@ -31,11 +32,12 @@ test('handles a simple GET route', function () {
     expect($GLOBALS['called'])->toBeTrue();
 });
 
-test('executes middleware', function () {
+it('executes middleware', function () {
     $router = new Router();
 
     $middleware = new class implements MiddlewareInterface {
-        public function handle($request) {
+        public function handle($request, $response)
+        {
             $GLOBALS['middlewareRan'] = true;
         }
     };
@@ -54,7 +56,7 @@ test('executes middleware', function () {
     expect($GLOBALS['middlewareRan'])->toBeTrue();
 });
 
-test('returns route not found', function () {
+it('returns route not found', function () {
     $router = new Router();
 
     $_SERVER['REQUEST_URI'] = '/nonexistent';
@@ -67,12 +69,13 @@ test('returns route not found', function () {
     expect($output)->toContain('Route not found');
 });
 
-test('handles optional param', function () {
+it('handles optional param', function () {
     $router = new Router();
 
     $router->get('/optional/:id?', new class {
-        public function handle($req) {
-            $GLOBALS['receivedParam'] = $req->params['id'];
+        public function handle($req)
+        {
+            $GLOBALS['receivedParam'] = $req->getParams()['id'];
         }
     }, 'handle');
 
@@ -86,12 +89,13 @@ test('handles optional param', function () {
     expect($GLOBALS['receivedParam'])->toBeNull();
 });
 
-test('handles grouped routes', function () {
+it('handles grouped routes', function () {
     $router = new Router();
 
-    $router->group('/api', function() use ($router) {
+    $router->group('/api', function () use ($router) {
         $router->get('/test', new class {
-            public function handle($req) {
+            public function handle($req)
+            {
                 $GLOBALS['calledInsideGroup'] = true;
             }
         }, 'handle');
