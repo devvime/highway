@@ -3,6 +3,13 @@
 use Highway\Modules\Test\TestController;
 use Highway\Middlewares\TestMiddleware;
 
+router->get('/', new class {
+    public function handle() {
+        view->assign('title','Hello!');
+        view->draw('test');
+    }
+}, 'handle');
+
 router->group('/user', function () {
     router->get('/', TestController::class, 'index');
     router->get('/:id', TestController::class, 'show');
