@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  php:
+      build: ./server/php
+      container_name: php
+      restart: always
+      volumes:
+        - .:/var/www
+      depends_on:
+        - redis
+        
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -19,15 +28,6 @@ services:
     restart: always
     ports:
       - "6379:6379"
-
-  php:
-    build: ./server/php
-    container_name: php
-    restart: always
-    volumes:
-      - .:/var/www
-    depends_on:
-      - redis
 
   mariadb:
     image: mariadb:latest
