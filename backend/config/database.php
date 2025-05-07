@@ -22,7 +22,7 @@ switch (DBDRIVER) {
   case 'sqlite':
     $capsule->addConnection([
       'driver'   => 'sqlite',
-      'database' => __DIR__ . '/../../database/db/database.sqlite3',
+      'database' => __DIR__ . '/../../database/sqlite/database.sqlite3',
       'prefix'   => '',
     ]);
     break;

@@ -45,6 +45,10 @@ switch (DBDRIVER) {
       ];
     break;
   case 'sqlite':
+    $db_dir = __DIR__ . '/database/sqlite';
+    if (!is_dir($db_dir)) {
+      mkdir($db_dir, 0755, true);
+    }
     return
       [
         'paths' => [
@@ -56,15 +60,15 @@ switch (DBDRIVER) {
           'default_environment' => 'development',
           'production' => [
             'adapter' => 'sqlite',
-            'name' => '%%PHINX_CONFIG_DIR%%/database/db/database',
+            'name' => '%%PHINX_CONFIG_DIR%%/database/sqlite/database',
           ],
           'development' => [
             'adapter' => 'sqlite',
-            'name' => '%%PHINX_CONFIG_DIR%%/database/db/database',
+            'name' => '%%PHINX_CONFIG_DIR%%/database/sqlite/database',
           ],
           'testing' => [
             'adapter' => 'sqlite',
-            'name' => '%%PHINX_CONFIG_DIR%%/database/db/database',
+            'name' => '%%PHINX_CONFIG_DIR%%/database/sqlite/database',
           ]
         ],
         'version_order' => 'creation'

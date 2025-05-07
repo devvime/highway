@@ -1,4 +1,4 @@
 /vendor
 /server/cache
-/database/db
+/database/sqlite
 .env
