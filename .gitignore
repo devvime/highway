@@ -1,3 +1,4 @@
 /vendor
 /server/cache
 /database/db
+.env
