@@ -14,17 +14,26 @@
     }
   },
   "scripts": {
-    "test": "php vendor/bin/pest"
+    "test": "php vendor/bin/pest",
+    "new:migration": "vendor/bin/phinx create",
+    "new:seed": "vendor/bin/phinx seed:create",
+    "migrate": "vendor/bin/phinx migrate",
+    "rollback": "vendor/bin/phinx rollback",
+    "run-seed": "vendor/bin/phinx seed:run"
   },
   "require": {
     "PHP": ">=8.1.0",
-    "firebase/php-jwt": "^5.2",
-    "phpmailer/phpmailer": "^6.1",
-    "vlucas/phpdotenv": "^5.4",
-    "rain/raintpl": ">=3.0.0"
+    "firebase/php-jwt": "^6.11",
+    "vlucas/phpdotenv": "^5.6",
+    "rain/raintpl": "^3.1",
+    "phpmailer/phpmailer": "^6.10",
+    "illuminate/database": "^12.12",
+    "illuminate/events": "^12.12",
+    "doctrine/dbal": "^4.2"
   },
   "require-dev": {
-    "pestphp/pest": "^2.2"
+    "pestphp/pest": "^3.8.2",
+    "robmorgan/phinx": "^0.16.8"
   },
   "config": {
     "allow-plugins": {

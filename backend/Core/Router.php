@@ -15,7 +15,7 @@ class Router
     public function get(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('GET', $path, $controller, $function, $middleware);
@@ -24,7 +24,7 @@ class Router
     public function post(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('POST', $path, $controller, $function, $middleware);
@@ -33,7 +33,7 @@ class Router
     public function put(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('PUT', $path, $controller, $function, $middleware);
@@ -42,7 +42,7 @@ class Router
     public function delete(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('DELETE', $path, $controller, $function, $middleware);
@@ -51,7 +51,7 @@ class Router
     public function patch(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('PATCH', $path, $controller, $function, $middleware);
@@ -60,7 +60,7 @@ class Router
     public function options(
         string $path,
         string | object $controller,
-        string $function = 'handle',
+        string | null $function = '',
         array $middleware = []
     ) {
         $this->setRoute('OPTIONS', $path, $controller, $function, $middleware);

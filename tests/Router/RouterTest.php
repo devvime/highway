@@ -41,7 +41,7 @@ it('executes middleware', function () {
 
     $router->get('/with-middleware', function() {
         //
-    }, null, [$middleware]);
+    }, '', [$middleware]);
 
     $_SERVER['REQUEST_URI'] = '/with-middleware';
     $_SERVER['REQUEST_METHOD'] = 'GET';
