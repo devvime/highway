@@ -36,9 +36,10 @@ services:
     ports:
       - 8998:3306
     environment:
-      # MARIADB_ROOT_PASSWORD: root
       MARIADB_USER: highway
-      MARIADB_PASSWORD: 400254/**!@$%&8(#)(spogjḱ-=-=00dd).;/[}]
+      MARIADB_PASSWORD: highway@pass
+      MARIADB_DATABASE: highway_db
+      MARIADB_RANDOM_ROOT_PASSWORD: 1
     volumes:
       - ./database/data:/var/lib/mysql
       - ./database/conf:/etc/mysql/conf.d
@@ -48,6 +49,6 @@ services:
     container_name: adminer
     restart: always
     ports:
-      - 8999:8080
+      - 8999:9181
     depends_on:
       - mariadb

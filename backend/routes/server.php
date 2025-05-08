@@ -4,8 +4,9 @@ use Highway\Modules\Test\TestController;
 use Highway\Middlewares\TestMiddleware;
 
 router->get('/', function ($req, $res) {
-    view->assign('title','Highway!');
-    view->draw('pages/home');
+    // view->assign('title','Highway!');
+    // view->draw('pages/home');
+    $res->json(['message'=>'ok']);
 });
 
 router->group('/user', function () {
