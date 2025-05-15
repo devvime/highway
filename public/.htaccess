@@ -1,7 +1,67 @@
 <IfModule mod_rewrite.c>
-	RewriteEngine On
-	RewriteRule ^(.*)/$ /$1 [L,R=301]
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^ index.php [L]
+    RewriteEngine On
+
+    # Remove barra no final da URL
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Redireciona HTTP para HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+    # Bloqueia acesso a arquivos sensíveis
+    RewriteRule ^(\.env|\.htaccess|composer\.(json|lock)|package\.json|config\.php|node_modules|vendor) - [F,L]
+
+    # Bloqueia execução de scripts em diretórios de uploads/armazenamento
+    RewriteRule ^(uploads|storage)/.*\.(php|pl|cgi|asp|aspx|py|sh)$ - [F,L]
+
+    # Proteção contra ataques via query string (XSS, Globals, etc)
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Fa-f]{2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Fa-f]{2})
+    RewriteRule .* - [F]
+
+    # Impede listagem de diretórios
+    Options -Indexes
+
+    # Bloqueia métodos perigosos
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
+    RewriteRule .* - [F]
+
+    # Bloqueia hotlinking de mídias
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !%{HTTP_HOST} [NC]
+    RewriteCond %{HTTP_REFERER} !google\. [NC]
+    RewriteCond %{HTTP_REFERER} !bing\. [NC]
+    RewriteCond %{HTTP_REFERER} !yahoo\. [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|svg|webp|mp4|mp3)$ - [F,NC]
+</IfModule>
+
+# Impede execução de scripts em qualquer lugar por padrão (fora o index.php)
+<FilesMatch "\.(php|pl|cgi|py|sh|jsp|asp|aspx)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'" 
+    # (descomente acima se quiser usar CSP — cuidado com uso de recursos externos)
+</IfModule>
+
+# Cache de arquivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
 </IfModule>
