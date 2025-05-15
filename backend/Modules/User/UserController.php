@@ -3,21 +3,21 @@
 namespace Highway\Modules\Test;
 
 use Highway\Core\Interfaces\ControllerInterface;
-use Highway\Core\Interfaces\RequestInterface;
-use Highway\Core\Interfaces\ResponseInterface;
+use Highway\Core\Request;
+use Highway\Core\Response;
 
 class UserController implements ControllerInterface
 {
     public function index(
-        RequestInterface $request,
-        ResponseInterface $response
+        Request $request,
+        Response $response
     ) {
         $response->json(['message'=>'GET ok']);
     }
 
     public function show(
-        RequestInterface $request,
-        ResponseInterface $response
+        Request $request,
+        Response $response
     ) {
         $response->json([
             'message'=>'GET SHOW ok',
@@ -28,8 +28,8 @@ class UserController implements ControllerInterface
     }
 
     public function store(
-        RequestInterface $request,
-        ResponseInterface $response
+        Request $request,
+        Response $response
     ) {
         $response->json([
             'message'=>'POST ok',
@@ -40,26 +40,26 @@ class UserController implements ControllerInterface
     }
 
     public function update(
-        RequestInterface $request,
-        ResponseInterface $response
+        Request $request,
+        Response $response
     ) {
         $response->json([
             'message'=>'PUT ok',
             'body'=>$request->body,
             'query'=>$request->query,
-            'params'=>$request->getParams(),
+            'params'=>$request->params,
         ]);
     }
 
     public function destroy(
-        RequestInterface $request,
-        ResponseInterface $response
+        Request $request,
+        Response $response
     ) {
         $response->json([
             'message'=>'DELETE ok',
             'body'=>$request->body,
             'query'=>$request->query,
-            'params'=>$request->getParams(),
+            'params'=>$request->params,
         ]);
     }
 }

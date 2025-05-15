@@ -1,14 +1,13 @@
 <?php
 
 use Highway\Core\Router;
-use Rain\Tpl;
+#
+# Root Path
+define('__ROOT__', dirname(dirname(__DIR__)));
 #
 # .env Settings
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
-#
-# Root Path
-define('__ROOT__', dirname(dirname(__DIR__)));
 #
 # CSS & JS Version
 define('VERSION', round(microtime(true) * 1000));
@@ -32,14 +31,6 @@ define('SECRET', $_ENV['SECRET']);
 # Timezone Settings
 date_default_timezone_set("America/Sao_Paulo");
 setlocale(LC_ALL, 'pt_BR');
-#
-# RainTPL Settings
-Tpl::configure(array(
-    "tpl_dir"   =>  __ROOT__ . '/frontend/',
-    "cache_dir" => __ROOT__ . '/server/cache/'
-));
-#
-const view = new Tpl;
 #
 # Router Settings
 const router = new Router();

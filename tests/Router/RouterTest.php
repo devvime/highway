@@ -2,6 +2,8 @@
 
 use Highway\Core\Router;
 use Highway\Core\Interfaces\MiddlewareInterface;
+use Highway\Core\Request;
+use Highway\Core\Response;
 
 beforeEach(function () {
     $_SERVER['REQUEST_URI'] = '';
@@ -33,7 +35,7 @@ it('executes middleware', function () {
     $router = new Router();
 
     $middleware = new class implements MiddlewareInterface {
-        public function handle($request, $response)
+        public function handle(Request $request, Response $response): void
         {
             $GLOBALS['middlewareRan'] = true;
         }

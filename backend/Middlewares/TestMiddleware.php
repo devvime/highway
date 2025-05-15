@@ -3,15 +3,15 @@
 namespace Highway\Middlewares;
 
 use Highway\Core\Interfaces\MiddlewareInterface;
-use Highway\Core\Interfaces\RequestInterface;
-use Highway\Core\Interfaces\ResponseInterface;
+use Highway\Core\Request;
+use Highway\Core\Response;
 
 class TestMiddleware implements MiddlewareInterface
 {
     public function handle(
-        RequestInterface $request,
-        ResponseInterface $response
-    ) {
+        Request $request,
+        Response $response
+    ): void {
         $response->json(['message'=>'Middleware ok']);
     }
 }

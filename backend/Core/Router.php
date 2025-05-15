@@ -126,38 +126,6 @@ class Router
         }
     }
 
-    // private function matchPath($pattern, $path)
-    // {
-    //     $patternParts = explode('/', trim($pattern, '/'));
-    //     $pathParts = explode('/', trim($path, '/'));
-
-    //     $params = [];
-
-    //     if (count($pathParts) < count(array_filter($patternParts, fn($part) => !(strpos($part, ':') === 0 && substr($part, -1) === '?'))) || count($pathParts) > count($patternParts)) {
-    //         return null;
-    //     }
-
-    //     foreach ($patternParts as $i => $part) {
-    //         if (!isset($pathParts[$i])) {
-    //             if (strpos($part, ':') === 0 && substr($part, -1) === '?') {
-    //                 $params[substr($part, 1, -1)] = null;
-    //                 continue;
-    //             } else {
-    //                 return null;
-    //             }
-    //         }
-
-    //         if (strpos($part, ':') === 0) {
-    //             $paramName = rtrim(substr($part, 1), '?');
-    //             $params[$paramName] = $pathParts[$i];
-    //         } elseif ($part !== $pathParts[$i]) {
-    //             return null;
-    //         }
-    //     }
-
-    //     return $params;
-    // }
-
     private function matchPath(
         string $pattern,
         string $path

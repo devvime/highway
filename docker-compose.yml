@@ -1,12 +1,15 @@
 version: "3.8"
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+  
   php:
       build: ./server/php
       container_name: php
       restart: always
-      volumes:
-        - .:/var/www
       depends_on:
         - redis
         
@@ -21,34 +24,3 @@ services:
       - ./server/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-
-  mariadb:
-    image: mariadb:latest
-    container_name: mariadb
-    restart: always
-    ports:
-      - 8998:3306
-    environment:
-      MARIADB_USER: highway
-      MARIADB_PASSWORD: highway@pass
-      MARIADB_DATABASE: highway_db
-      MARIADB_RANDOM_ROOT_PASSWORD: 1
-    volumes:
-      - ./database/data:/var/lib/mysql
-      - ./database/conf:/etc/mysql/conf.d
-
-  adminer:
-    image: adminer:latest
-    container_name: adminer
-    restart: always
-    ports:
-      - 8999:9181
-    depends_on:
-      - mariadb

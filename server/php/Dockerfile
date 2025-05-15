@@ -1,7 +1,10 @@
 FROM php:8.2-fpm
 
-# Instalar extensões e dependências
-RUN apt-get update && apt-get install -y \
+# Define o diretório de trabalho
+WORKDIR /var/www/public
+
+# Instala extensões e dependências necessárias
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     libzip-dev \
     zip \
@@ -17,20 +20,19 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install pdo pdo_mysql gd
-
-# Redis
-RUN pecl install redis && docker-php-ext-enable redis
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copia o código da aplicação
 COPY . /var/www
 
-# Ajusta permissões (depois de copiar)
-RUN mkdir -p /var/www/server/cache && \
-    chown -R www-data:www-data /var/www/server/cache && \
-    chmod -R 775 /var/www/server/cache
-
-RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
-
-
-WORKDIR /var/www/public
+# Ajusta permissões
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www

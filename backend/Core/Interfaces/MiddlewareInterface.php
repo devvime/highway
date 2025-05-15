@@ -2,13 +2,13 @@
 
 namespace Highway\Core\Interfaces;
 
-use Highway\Core\Interfaces\RequestInterface;
-use Highway\Core\Interfaces\ResponseInterface;
+use Highway\Core\Request;
+use Highway\Core\Response;
 
 interface MiddlewareInterface
 {
     public function handle(
-        RequestInterface $request,
-        ResponseInterface $response
-    );
+        Request $request,
+        Response $response
+    ): void;
 }
